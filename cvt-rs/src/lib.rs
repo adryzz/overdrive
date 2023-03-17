@@ -1,5 +1,3 @@
-use std::fmt::Display;
-
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct CvtTimings {
     pixel_clock: f64, // MHz
@@ -266,8 +264,8 @@ impl CvtTimings {
             v_active: v_lines_rnd as u32,
             v_blank: v_blank as u32,
             v_total: total_v_lines as u32,
-            h_freq: h_freq.round(), //todo: round to 2 decimal places
-            v_freq: v_freq.round(), // here as well
+            h_freq: (h_freq * 100.0).round() / 100.0, //todo: round to 2 decimal places
+            v_freq: (v_freq * 100.0).round() / 100.0, // here as well
             h_period: 1.0 / h_freq,
             v_period: 1.0 / v_freq,
             h_front_porch: h_front_porch as u32,
@@ -284,7 +282,7 @@ impl CvtTimings {
 
     pub fn generate_modeline(&self) -> String {
         format!(
-            "Modeline \"{}x{}_{}{}\" {} {} {} {} {} {} {} {} {} {} {} {}",
+            "\"{}x{}_{:.2}{}\" {} {} {} {} {} {} {} {} {} {} {} {}",
             self.h_active,
             self.v_active,
             self.v_freq,
