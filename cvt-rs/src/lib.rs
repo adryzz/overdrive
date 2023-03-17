@@ -1,6 +1,6 @@
-use std::fmt::Display;
+use std::fmt::{Display, format};
 
-use enumflags2::{bitflags, make_bitflags, BitFlags};
+use enumflags2::{bitflags, BitFlags};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ModelineTimings {
@@ -42,6 +42,8 @@ pub struct CvtTimings {
     v_sync_polarity: bool, // +/-
     v_freq: f64, // KHz
     v_period: f64, // us
+
+    interlaced: bool,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -81,7 +83,7 @@ enum AspectRatio {
 }
 
 impl Display for ModelineTimings {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, _f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         todo!()
     }
 }
@@ -91,12 +93,12 @@ impl CvtTimings {
     // look into GTF for the future
     // https://glenwing.github.io/docs/VESA-GTF-1.1.pdf
     pub fn generate(h_pixels: u32, v_pixels: u32, refresh_rate: f64, blanking_mode: BlankingMode, margins: bool, interlaced: bool) -> Result<Self, anyhow::Error> {
-        let clock_step = 0.25;
+        let clock_step: f64;
         let min_v_bporch: u32 = 6;
-        let rb_h_blank: u32 = 160;
-        let rb_h_sync: u32 = 32;
+        let rb_h_blank: u32;
+        let _rb_h_sync: u32 = 32;
         let rb_min_v_blank: u32 = 460;
-        let rb_v_fporch: u32 = 3;
+        let rb_v_fporch: u32;
         let refresh_multiplier: f64;
         let h_pol: bool;
         let v_pol: bool;
@@ -110,16 +112,25 @@ impl CvtTimings {
 
         match blanking_mode {
             BlankingMode::Normal => {
+                clock_step = 0.25;
+                rb_h_blank = 160;
+                rb_v_fporch = 3;
                 refresh_multiplier = 1.0;
                 h_pol = false;
                 v_pol = true;
             }
             BlankingMode::Reduced => {
+                clock_step = 0.25;
+                rb_h_blank = 160;
+                rb_v_fporch = 3;
                 refresh_multiplier = 1.0;
                 h_pol = true;
                 v_pol = false;
             }
             BlankingMode::ReducedV2 => {
+                clock_step = 0.001;
+                rb_h_blank = 80;
+                rb_v_fporch = 1;
                 refresh_multiplier = 1.0; // video optimized shit idk
                 h_pol = true;
                 v_pol = false;
@@ -225,7 +236,7 @@ impl CvtTimings {
             total_pixels = (rb_h_blank + total_active_pixels) as f64;
             act_pix_freq = clock_step * ((v_field_rate_rqd * total_v_lines * total_pixels / 1000000.0 * refresh_multiplier) / clock_step).floor();
 
-            if (blanking_mode == BlankingMode::ReducedV2) {
+            if blanking_mode == BlankingMode::ReducedV2 {
                 v_blank = act_vbi_lines;
                 v_front_porch = act_vbi_lines - v_sync_rnd - 6.0;
                 v_back_porch = 6.0;
@@ -255,8 +266,8 @@ impl CvtTimings {
          v_active: v_lines_rnd as u32,
          v_blank: v_blank as u32,
          v_total: total_v_lines as u32,
-         h_freq,
-         v_freq,
+         h_freq: h_freq.round(), //todo: round to 2 decimal places
+         v_freq: v_freq.round(), // here as well
          h_period: 1.0/h_freq,
          v_period: 1.0/v_freq,
          h_front_porch: h_front_porch as u32,
@@ -266,12 +277,13 @@ impl CvtTimings {
          v_front_porch: v_front_porch as u32,
          v_sync: v_sync_rnd as u32,
          v_back_porch: v_back_porch as u32,
-         v_sync_polarity: v_pol
+         v_sync_polarity: v_pol,
+         interlaced
      })
     }
 
     pub fn generate_modeline(&self) -> String {
-        todo!()
+        format!("Modeline \"{}x{}_{}{}\" {} {} {} {} {} {} {} {} {} {} {} {}", self.h_active, self.v_active, self.v_freq, if self.interlaced {"i"} else {""}, (self.pixel_clock/1000.0).round() / 1000.0, self.h_active, self.h_active + self.h_front_porch, self.h_active + self.h_front_porch + self.h_sync, self.h_total, self.v_active, self.v_active + self.v_front_porch, self.v_active + self.v_front_porch + self.v_sync, self.v_total, if self.h_sync_polarity {"+HSync"} else {"-HSync"}, if self.v_sync_polarity {"+Vsync"} else {"-VSync"}, if self.interlaced {"Interlace"} else {""})
     }
 }
 
@@ -287,7 +299,7 @@ fn get_aspect_ratio(interlaced: bool, v_lines_rnd: f64, h_pixels_rnd: f64, cell_
     let hor_pixels_12_5 = cell_gran_rnd * (ver_pixels * 12.0 / 5.0).floor() / cell_gran_rnd;
 
     if hor_pixels_4_3 == h_pixels_rnd {
-        return AspectRatio::Aspect4by3;
+        AspectRatio::Aspect4by3
     } else if hor_pixels_16_9 == h_pixels_rnd {
         return AspectRatio::Aspect16by9;
     } else if hor_pixels_16_10 == h_pixels_rnd {
