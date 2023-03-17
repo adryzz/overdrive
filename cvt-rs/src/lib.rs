@@ -1,23 +1,4 @@
-use std::fmt::{Display, format};
-
-use enumflags2::{bitflags, BitFlags};
-
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub struct ModelineTimings {
-    pixel_clock: f64,
-
-    hdisp: u32,
-    hsync_start: u32,
-    hsync_end: u32,
-    htotal: u32,
-
-    vdisp: u32,
-    vsync_start: u32,
-    vsync_end: u32,
-    vtotal: u32,
-
-    flags: BitFlags<DisplayFlags>
-}
+use std::fmt::{Display};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct CvtTimings {
@@ -53,21 +34,6 @@ pub enum BlankingMode {
     ReducedV2
 }
 
-#[bitflags]
-#[repr(u16)]
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub enum DisplayFlags {
-    PlusHSync,
-    MinusHSync,
-    PlusVSync,
-    MinusVSync,
-    Interlace,
-    DoubleScan,
-    Csync,
-    PlusCSync,
-    MinusCSync
-}
-
 enum AspectRatio {
     Aspect4by3,
     Aspect16by9,
@@ -80,12 +46,6 @@ enum AspectRatio {
     Aspect64by27,
     Aspect12by5,
     AspectUnknown
-}
-
-impl Display for ModelineTimings {
-    fn fmt(&self, _f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        todo!()
-    }
 }
 
 impl CvtTimings {
