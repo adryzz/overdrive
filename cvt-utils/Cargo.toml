@@ -2,6 +2,13 @@
 name = "cvt-utils"
 version = "0.1.0"
 edition = "2021"
+description = "A crate to generate CVT (Coordinated Video Timings) values."
+documentation = "https://docs.rs/cvt-utils"
+readme = "README.md"
+repository = "https://github.com/adryzz/overdrive-rs/cvt-utils"
+license = "LGPLv3"
+keywords = ["monitor", "timings", "VGA", "CRT", "LCD"]
+categories = ["hardware-support", "rendering", "emulators", "embedded"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

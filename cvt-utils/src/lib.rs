@@ -1,34 +1,72 @@
+
+/// Represents CVT timings.
+/// To better understand CVT timings, read the README of this crate
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct CvtTimings {
-    pub pixel_clock: f64, // MHz
+    /// The pixel clock (MHz)
+    pub pixel_clock: f64,
 
-    pub h_total: u32,          // Pixels
-    pub h_active: u32,         // Pixels
-    pub h_blank: u32,          // Pixels
-    pub h_front_porch: u32,    // Pixels
-    pub h_sync: u32,           // Pixels
-    pub h_back_porch: u32,     // Pixels
-    pub h_sync_polarity: bool, // +/-
-    pub h_freq: f64,           // KHz
-    pub h_period: f64,         // us
+    /// Total width to scan (Pixels)
+    pub h_total: u32,
+    /// Active width section to scan (Pixels)
+    pub h_active: u32,
+    /// Blanking width section to scan (Pixels)
+    pub h_blank: u32,
+    /// Front Porch width section to scan (Pixels)
+    pub h_front_porch: u32,
+    /// Horizontal Sync (Pixels)
+    pub h_sync: u32,
+    /// Back Porch width section to scan (Pixels)
+    pub h_back_porch: u32,
+    /// Polarity of the horizontal sync scan (+/-)
+    pub h_sync_polarity: bool,
+    /// Horizontal scan frequency (KHz)
+    /// This represents how many times per second a horizontal scan is performed
+    pub h_freq: f64,
+    /// Horizontal scan period (us)
+    /// This represents the amount of time a horizontal scan takes
+    pub h_period: f64,
 
-    pub v_total: u32,          // Pixels
-    pub v_active: u32,         // Pixels
-    pub v_blank: u32,          // Pixels
-    pub v_front_porch: u32,    // Pixels
-    pub v_sync: u32,           // Pixels
-    pub v_back_porch: u32,     // Pixels
-    pub v_sync_polarity: bool, // +/-
-    pub v_freq: f64,           // KHz
-    pub v_period: f64,         // us
+    /// Total height to scan (Pixels)
+    pub v_total: u32,
+    /// Active height section to scan (Pixels)
+    pub v_active: u32,
+    /// Blanking height section to scan (Pixels)
+    pub v_blank: u32,
+    /// Front Porch height section to scan (Pixels)
+    pub v_front_porch: u32,
+    /// Vertical Sync (Pixels)
+    pub v_sync: u32,
+    /// Back Porch height section to scan (Pixels)
+    pub v_back_porch: u32,
+    /// Polarity of the vertical sync scan (+/-)
+    pub v_sync_polarity: bool,
+    /// Vertical scan frequency (KHz)
+    /// This represents how many times per second a vertical scan is performed
+    pub v_freq: f64,
+    /// Vertical scan period (us)
+    /// This represents the amount of time a vertical scan takes
+    pub v_period: f64,
 
+    /// Whether the video stream is interlaced or not
     pub interlaced: bool,
 }
 
+/// Monitor blanking mode
+/// Determines the way a monitor should draw frames to the screen and the amount of bandwidth they use on the wire.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum BlankingMode {
+    /// Normal blanking.
+    /// does not cut down any time, works on all monitor types.
+    /// If you want to overdrive a non-CRT monitor, you should check out [BlankingMode::ReducedV2] or [BlankingMode::Reduced].
     Normal,
+    /// Reduced blanking.
+    /// Does not work on CRT displays, but cuts down significantly on the bandwidth required.
+    /// You should use [BlankingMode::ReducedV2] instead, it being more efficient, unless it causes issues with your monitor.
     Reduced,
+    /// Reduced blanking V2.
+    /// Does not work on CRT displays, but cuts down significantly on the bandwidth required, even more than [BlankingMode::Reduced].
+    /// If it causes issues with your monitor, switch to [BlankingMode::Reduced] or [BlankingMode::Normal].
     ReducedV2,
 }
 
@@ -40,7 +78,7 @@ enum AspectRatio {
     Aspect5by4,
     Aspect15by9,
 
-    // not defined by the spec
+    /// NOTE: NOT DEFINED BY THE SPEC
     Aspect43by18,
     Aspect64by27,
     Aspect12by5,
@@ -51,6 +89,8 @@ impl CvtTimings {
     // generates  video timings according to the VESA CVT standard
     // look into GTF for the future
     // https://glenwing.github.io/docs/VESA-GTF-1.1.pdf
+
+    /// Generates CVT timings according to the input given.
     pub fn generate(
         h_pixels: u32,
         v_pixels: u32,
