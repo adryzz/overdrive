@@ -1,5 +1,6 @@
 
 /// Represents CVT timings.
+/// 
 /// To better understand CVT timings, read the README of this crate
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct CvtTimings {
@@ -21,9 +22,11 @@ pub struct CvtTimings {
     /// Polarity of the horizontal sync scan (+/-)
     pub h_sync_polarity: bool,
     /// Horizontal scan frequency (KHz)
+    /// 
     /// This represents how many times per second a horizontal scan is performed
     pub h_freq: f64,
     /// Horizontal scan period (us)
+    /// 
     /// This represents the amount of time a horizontal scan takes
     pub h_period: f64,
 
@@ -42,9 +45,11 @@ pub struct CvtTimings {
     /// Polarity of the vertical sync scan (+/-)
     pub v_sync_polarity: bool,
     /// Vertical scan frequency (KHz)
+    /// 
     /// This represents how many times per second a vertical scan is performed
     pub v_freq: f64,
     /// Vertical scan period (us)
+    /// 
     /// This represents the amount of time a vertical scan takes
     pub v_period: f64,
 
@@ -52,20 +57,27 @@ pub struct CvtTimings {
     pub interlaced: bool,
 }
 
-/// Monitor blanking mode
+/// Monitor blanking mode.
+/// 
 /// Determines the way a monitor should draw frames to the screen and the amount of bandwidth they use on the wire.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum BlankingMode {
     /// Normal blanking.
+    /// 
     /// does not cut down any time, works on all monitor types.
+    /// 
     /// If you want to overdrive a non-CRT monitor, you should check out [BlankingMode::ReducedV2] or [BlankingMode::Reduced].
     Normal,
     /// Reduced blanking.
+    /// 
     /// Does not work on CRT displays, but cuts down significantly on the bandwidth required.
+    /// 
     /// You should use [BlankingMode::ReducedV2] instead, it being more efficient, unless it causes issues with your monitor.
     Reduced,
     /// Reduced blanking V2.
+    /// 
     /// Does not work on CRT displays, but cuts down significantly on the bandwidth required, even more than [BlankingMode::Reduced].
+    /// 
     /// If it causes issues with your monitor, switch to [BlankingMode::Reduced] or [BlankingMode::Normal].
     ReducedV2,
 }
