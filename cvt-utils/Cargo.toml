@@ -1,11 +1,11 @@
 [package]
 name = "cvt-utils"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "A crate to generate CVT (Coordinated Video Timings) values."
 documentation = "https://docs.rs/cvt-utils"
 readme = "README.md"
-repository = "https://github.com/adryzz/overdrive-rs/cvt-utils"
+repository = "https://github.com/adryzz/overdrive/cvt-utils"
 license = "BSD-3-Clause-Attribution"
 keywords = ["monitor", "timings", "VGA", "CRT", "LCD"]
 categories = ["hardware-support", "rendering", "emulators", "embedded"]
