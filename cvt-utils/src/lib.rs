@@ -1,28 +1,28 @@
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct CvtTimings {
-    pixel_clock: f64, // MHz
+    pub pixel_clock: f64, // MHz
 
-    h_total: u32,          // Pixels
-    h_active: u32,         // Pixels
-    h_blank: u32,          // Pixels
-    h_front_porch: u32,    // Pixels
-    h_sync: u32,           // Pixels
-    h_back_porch: u32,     // Pixels
-    h_sync_polarity: bool, // +/-
-    h_freq: f64,           // KHz
-    h_period: f64,         // us
+    pub h_total: u32,          // Pixels
+    pub h_active: u32,         // Pixels
+    pub h_blank: u32,          // Pixels
+    pub h_front_porch: u32,    // Pixels
+    pub h_sync: u32,           // Pixels
+    pub h_back_porch: u32,     // Pixels
+    pub h_sync_polarity: bool, // +/-
+    pub h_freq: f64,           // KHz
+    pub h_period: f64,         // us
 
-    v_total: u32,          // Pixels
-    v_active: u32,         // Pixels
-    v_blank: u32,          // Pixels
-    v_front_porch: u32,    // Pixels
-    v_sync: u32,           // Pixels
-    v_back_porch: u32,     // Pixels
-    v_sync_polarity: bool, // +/-
-    v_freq: f64,           // KHz
-    v_period: f64,         // us
+    pub v_total: u32,          // Pixels
+    pub v_active: u32,         // Pixels
+    pub v_blank: u32,          // Pixels
+    pub v_front_porch: u32,    // Pixels
+    pub v_sync: u32,           // Pixels
+    pub v_back_porch: u32,     // Pixels
+    pub v_sync_polarity: bool, // +/-
+    pub v_freq: f64,           // KHz
+    pub v_period: f64,         // us
 
-    interlaced: bool,
+    pub interlaced: bool,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -32,6 +32,7 @@ pub enum BlankingMode {
     ReducedV2,
 }
 
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 enum AspectRatio {
     Aspect4by3,
     Aspect16by9,
@@ -57,7 +58,7 @@ impl CvtTimings {
         blanking_mode: BlankingMode,
         margins: bool,
         interlaced: bool,
-    ) -> Result<Self, anyhow::Error> {
+    ) -> Self {
         let clock_step: f64;
         let min_v_bporch: u32 = 6;
         let rb_h_blank: u32;
@@ -256,7 +257,7 @@ impl CvtTimings {
         let pclock = act_pix_freq * 1000000.0;
         let h_freq = pclock / total_pixels;
         let v_freq = pclock / (total_v_lines * total_pixels);
-        Ok(Self {
+        Self {
             pixel_clock: pclock,
             h_active: total_active_pixels,
             h_blank: h_blank as u32,
@@ -264,8 +265,8 @@ impl CvtTimings {
             v_active: v_lines_rnd as u32,
             v_blank: v_blank as u32,
             v_total: total_v_lines as u32,
-            h_freq: (h_freq * 100.0).round() / 100.0, //todo: round to 2 decimal places
-            v_freq: (v_freq * 100.0).round() / 100.0, // here as well
+            h_freq: (h_freq * 100.0).round() / 100.0,
+            v_freq: (v_freq * 100.0).round() / 100.0,
             h_period: 1.0 / h_freq,
             v_period: 1.0 / v_freq,
             h_front_porch: h_front_porch as u32,
@@ -277,12 +278,12 @@ impl CvtTimings {
             v_back_porch: v_back_porch as u32,
             v_sync_polarity: v_pol,
             interlaced,
-        })
+        }
     }
 
     pub fn generate_modeline(&self) -> String {
         format!(
-            "\"{}x{}_{:.2}{}\" {} {} {} {} {} {} {} {} {} {} {} {}",
+            "Modeline \"{}x{}_{:.2}{}\" {} {} {} {} {} {} {} {} {} {} {} {}",
             self.h_active,
             self.v_active,
             self.v_freq,

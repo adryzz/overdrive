@@ -1,2 +1,2 @@
 [workspace]
-members = ["cvt-rs", "overdrived", "overdrivectl"]
+members = ["cvt-utils", "overdrived", "overdrivectl"]
