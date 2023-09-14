@@ -1,6 +1,6 @@
 [package]
 name = "cvt-utils"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "A crate to generate CVT (Coordinated Video Timings) values."
 documentation = "https://docs.rs/cvt-utils"
